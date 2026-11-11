@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatheMeister 5. Sınıf | 4-5 Haneli Sayıları 3 Haneliye Bölme (Schriftliche Division)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo-badge">➗</div>
+        <div>
+          <h1>MatheMeister <span class="badge-gym">Gymnasium 5. Klasse</span></h1>
+          <p class="subtitle" data-i18n="subtitle">4 ve 5 Haneli Sayıları 3 Haneli Sayılara Bölme • <em>Schriftliche Division</em></p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="score-pill" title="Toplam Kazanılan Yıldız / Sterne">
+          <span class="star-icon">⭐</span>
+          <span id="star-count">0</span>
+          <span class="streak-divider">|</span>
+          <span class="fire-icon">🔥</span>
+          <span id="streak-count">0</span>
+        </div>
+
+        <div class="lang-switch" role="group" aria-label="Dil Seçimi">
+          <button class="lang-btn active" data-lang="dual">🇹🇷+🇩🇪 İkisi</button>
+          <button class="lang-btn" data-lang="tr">🇹🇷 Türkçe</button>
+          <button class="lang-btn" data-lang="de">🇩🇪 Deutsch</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Navigation Tabs -->
+  <nav class="mode-tabs">
+    <button class="tab-btn active" data-tab="learn">
+      <span class="tab-icon">🔍</span>
+      <div class="tab-text">
+        <strong data-i18n="tab_learn_title">Adım Adım Öğren</strong>
+        <small data-i18n="tab_learn_sub">Görsel Anlatım &amp; Kendi Sorunu Çöz</small>
+      </div>
+    </button>
+    <button class="tab-btn" data-tab="practice">
+      <span class="tab-icon">✏️</span>
+      <div class="tab-text">
+        <strong data-i18n="tab_practice_title">Kareli Defterde Sen Çöz!</strong>
+        <small data-i18n="tab_practice_sub">İnteraktif Alıştırma (Übungsmodus)</small>
+      </div>
+    </button>
+    <button class="tab-btn" data-tab="tricks">
+      <span class="tab-icon">💡</span>
+      <div class="tab-text">
+        <strong data-i18n="tab_tricks_title">Gymnasium Sırları &amp; Taktikler</strong>
+        <small data-i18n="tab_tricks_sub">Yuvarlama (Überschlag) &amp; Sıfır Tuzağı</small>
+      </div>
+    </button>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="main-container">
+
+    <!-- ==================== TAB 1: LEARN MODE ==================== -->
+    <section id="tab-learn" class="tab-panel active">
+      <!-- Problem Control Bar -->
+      <div class="control-card">
+        <div class="control-row">
+          <div class="input-group">
+            <label for="learn-dividend" data-i18n="lbl_dividend">Bölünen (Dividend - 4/5 Hane)</label>
+            <input type="number" id="learn-dividend" min="1000" max="99999" value="28456" />
+          </div>
+          <div class="operator-symbol">:</div>
+          <div class="input-group">
+            <label for="learn-divisor" data-i18n="lbl_divisor">Bölen (Divisor - 3 Hane)</label>
+            <input type="number" id="learn-divisor" min="100" max="999" value="127" />
+          </div>
+          <button id="btn-solve-custom" class="btn btn-primary" data-i18n="btn_start_learn">
+            🚀 Adım Adım Göster
+          </button>
+        </div>
+
+        <div class="preset-row">
+          <span class="preset-label" data-i18n="lbl_presets">Hazır Örnekler (Beispiele):</span>
+          <button class="chip-btn" data-dividend="7824" data-divisor="326">
+            4 Hane Kalansız (7824 : 326)
+          </button>
+          <button class="chip-btn" data-dividend="28456" data-divisor="127">
+            5 Hane Klasik (28456 : 127)
+          </button>
+          <button class="chip-btn chip-warning" data-dividend="43218" data-divisor="214">
+            ⚠️ Sıfır Tuzağı! (43218 : 214)
+          </button>
+          <button class="chip-btn" data-dividend="65490" data-divisor="275">
+            Kalanlı (Mit Rest) (65490 : 275)
+          </button>
+          <button id="btn-random-learn" class="chip-btn chip-accent" data-i18n="btn_random">
+            🎲 Rastgele Soru Üret
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Golden Steps Cycle Banner -->
+      <div class="cycle-banner">
+        <div class="cycle-title" data-i18n="cycle_title">4 Altın Adım Döngüsü (Die 4 Schritte):</div>
+        <div class="cycle-steps">
+          <div class="cycle-pill" id="pill-divide">
+            <span class="step-num">1</span>
+            <div>
+              <strong>Böl (Dividieren)</strong>
+              <small>Kaç kere var? (Wie oft passt es?)</small>
+            </div>
+          </div>
+          <div class="cycle-arrow">➔</div>
+          <div class="cycle-pill" id="pill-multiply">
+            <span class="step-num">2</span>
+            <div>
+              <strong>Çarp (Multiplizieren)</strong>
+              <small>Geri çarp (Rückmultiplizieren)</small>
+            </div>
+          </div>
+          <div class="cycle-arrow">➔</div>
+          <div class="cycle-pill" id="pill-subtract">
+            <span class="step-num">3</span>
+            <div>
+              <strong>Çıkar (Subtrahieren)</strong>
+              <small>Farkı bul (Abziehen)</small>
+            </div>
+          </div>
+          <div class="cycle-arrow">➔</div>
+          <div class="cycle-pill" id="pill-bringdown">
+            <span class="step-num">4</span>
+            <div>
+              <strong>İndir (Herunterholen)</strong>
+              <small>Yeni rakamı indir (Nächste Ziffer)</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workspace Grid + Explanation Side by Side -->
+      <div class="workspace-layout">
+        <!-- Left: German Squared Notebook (Kästchenheft) -->
+        <div class="notebook-card">
+          <div class="notebook-header">
+            <span class="notebook-title">📓 Kareli Defter (Kästchenheft - Gymnasium Formatı)</span>
+            <span class="step-counter" id="learn-step-counter">Adım 0 / 0</span>
+          </div>
+
+          <div class="kaestchen-wrapper">
+            <div id="learn-grid" class="kaestchen-grid" aria-live="polite"></div>
+          </div>
+
+          <!-- Playback Controls -->
+          <div class="playback-bar">
+            <button id="btn-first" class="btn btn-icon" title="Başa Dön">⏮️</button>
+            <button id="btn-prev" class="btn btn-secondary" data-i18n="btn_prev">◀ Önceki Adım</button>
+            <button id="btn-play" class="btn btn-accent" data-i18n="btn_play">▶ Otomatik Oynat</button>
+            <button id="btn-next" class="btn btn-primary" data-i18n="btn_next">Sonraki Adım ▶</button>
+            <button id="btn-last" class="btn btn-icon" title="Sona Git">⏭️</button>
+          </div>
+        </div>
+
+        <!-- Right: Teacher Explanation & Estimation Helper -->
+        <div class="sidebar-stack">
+          <!-- Dynamic Explanation Box -->
+          <div class="coach-card">
+            <div class="coach-header">
+              <div class="coach-avatar">🦉</div>
+              <div>
+                <h3 id="coach-step-title">Adım Açıklaması</h3>
+                <span class="coach-tag" id="coach-step-badge">Başlangıç</span>
+              </div>
+            </div>
+            <div class="coach-body" id="coach-explanation">
+              <!-- Populated dynamically -->
+            </div>
+            <div class="estimation-box" id="coach-estimation">
+              <!-- Populated with rounding trick (Überschlag) -->
+            </div>
+          </div>
+
+          <!-- Multiplication Helper Table (Hilfstabelle / Überschlag) -->
+          <div class="helper-card">
+            <div class="helper-header">
+              <h4>🧮 Çarpım &amp; Tahmin Tablosu (Hilfstabelle)</h4>
+              <button id="btn-toggle-multiples" class="btn-small">Tabloyu Gizle/Göster</button>
+            </div>
+            <p class="helper-hint" data-i18n="helper_hint">
+              İpucu: Sınavda hepsini yazmana gerek yok! Böleni en yakın yüzlüğe yuvarlayıp tahmin et, sonra sadece 1-2 tanesini kenarda çarp.
+            </p>
+            <div id="multiples-list" class="multiples-grid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: PRACTICE MODE ==================== -->
+    <section id="tab-practice" class="tab-panel">
+      <div class="control-card">
+        <div class="practice-top-bar">
+          <div class="difficulty-group">
+            <span class="preset-label" data-i18n="lbl_difficulty">Seviye Seç (Schwierigkeit):</span>
+            <button class="diff-btn active" data-diff="4d-exact">4 Hane : 3 Hane (Kalansız)</button>
+            <button class="diff-btn" data-diff="5d-exact">5 Hane : 3 Hane (Kalansız)</button>
+            <button class="diff-btn" data-diff="5d-zero">⭐ Sıfır Tuzaklı (Null-Falle)</button>
+            <button class="diff-btn" data-diff="5d-rest">🔥 Kalanlı (Mit Rest)</button>
+          </div>
+          <button id="btn-new-practice" class="btn btn-primary" data-i18n="btn_new_question">
+            🎲 Yeni Soru Ver (Neue Aufgabe)
+          </button>
+        </div>
+      </div>
+
+      <div class="workspace-layout">
+        <!-- Left: Interactive Kästchen Grid -->
+        <div class="notebook-card">
+          <div class="notebook-header">
+            <span class="notebook-title">✏️ Sıra Sende! (Du bist dran!)</span>
+            <span class="step-counter" id="practice-progress-label">Adım 1</span>
+          </div>
+
+          <div class="kaestchen-wrapper">
+            <div id="practice-grid" class="kaestchen-grid"></div>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Question Prompt & Feedback -->
+        <div class="sidebar-stack">
+          <div class="coach-card practice-prompt-card">
+            <div class="coach-header">
+              <div class="coach-avatar" id="practice-avatar">🦊</div>
+              <div>
+                <h3 id="practice-prompt-title">Şimdi Ne Yapıyoruz?</h3>
+                <span class="coach-tag" id="practice-phase-badge">1. Adım: Bölme</span>
+              </div>
+            </div>
+
+            <div class="coach-body" id="practice-question-text">
+              <!-- Dynamic question -->
+            </div>
+
+            <!-- Interactive Answer Input Area -->
+            <div class="practice-input-area" id="practice-input-container">
+              <div class="answer-row">
+                <input type="number" id="practice-user-input" class="big-answer-input" placeholder="?" autocomplete="off" />
+                <button id="btn-check-answer" class="btn btn-primary btn-check">
+                  Kontrol Et ✓
+                </button>
+              </div>
+              <div class="practice-actions">
+                <button id="btn-show-hint" class="btn btn-secondary btn-small">
+                  💡 İpucu Ver (Tipp)
+                </button>
+                <button id="btn-skip-step" class="btn btn-ghost btn-small">
+                  Bu Adımı Göster (Lösung zeigen)
+                </button>
+              </div>
+            </div>
+
+            <div id="practice-feedback" class="feedback-banner hidden"></div>
+            <div id="practice-hint-box" class="estimation-box hidden"></div>
+          </div>
+
+          <!-- Scratchpad / Kenar İşlemi (Nebenrechnung) -->
+          <div class="helper-card">
+            <div class="helper-header">
+              <h4>📝 Hızlı Deneme Çarpanı (Nebenrechnung)</h4>
+            </div>
+            <p class="helper-hint">
+              Tahmin ettiğin rakamı burada bölenle çarpıp kontrol edebilirsin:
+            </p>
+            <div class="scratchpad-calc">
+              <span id="scratch-divisor">127</span>
+              <span>×</span>
+              <div class="scratch-buttons" id="scratch-digit-btns">
+                <button class="scratch-btn" data-d="1">1</button>
+                <button class="scratch-btn" data-d="2">2</button>
+                <button class="scratch-btn" data-d="3">3</button>
+                <button class="scratch-btn" data-d="4">4</button>
+                <button class="scratch-btn" data-d="5">5</button>
+                <button class="scratch-btn" data-d="6">6</button>
+                <button class="scratch-btn" data-d="7">7</button>
+                <button class="scratch-btn" data-d="8">8</button>
+                <button class="scratch-btn" data-d="9">9</button>
+              </div>
+            </div>
+            <div id="scratch-result" class="scratch-output">
+              Bir rakama tıkla! (Klicke auf eine Ziffer!)
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: GYMNASIUM TRICKS & GUIDE ==================== -->
+    <section id="tab-tricks" class="tab-panel">
+      <div class="tricks-grid">
+        <!-- Card 1: German vs Turkish Division Format -->
+        <div class="trick-card">
+          <div class="trick-icon">🇩🇪</div>
+          <h3>1. Almanya'da Bölme Nasıl Yazılır? (Schriftliche Division)</h3>
+          <p>
+            Türkiye'de bölme işleminde dikey çizgi çekilir, ancak <strong>Almanya Gymnasium</strong>'da işlem kareli defterde (<em>Kästchenheft</em>) <strong>tek satırda yan yana</strong> yazılır ve her rakam kendi karesine (<em>Kästchen</em>) oturur:
+          </p>
+          <div class="vocab-table">
+            <div class="vocab-row">
+              <span class="v-de">Dividend</span>
+              <span class="v-symbol">:</span>
+              <span class="v-de">Divisor</span>
+              <span class="v-symbol">=</span>
+              <span class="v-de">Quotient</span>
+              <span class="v-rest">(+ Rest)</span>
+            </div>
+            <div class="vocab-row tr-sub">
+              <span>Bölünen</span>
+              <span>:</span>
+              <span>Bölen</span>
+              <span>=</span>
+              <span>Bölüm</span>
+              <span>(Kalan)</span>
+            </div>
+          </div>
+          <p class="trick-note">
+            📌 <strong>Çok Önemli Kural:</strong> Rakamları alt alta yazarken basamakların (<em>Stellenwerte</em>) tam alt alta gelmesi şarttır! Yoksa çıkarma yaparken karıştırırsın.
+          </p>
+        </div>
+
+        <!-- Card 2: The Estimation Trick (Überschlag) -->
+        <div class="trick-card">
+          <div class="trick-icon">🎯</div>
+          <h3>2. 3 Haneli Sayıyla Kolay Tahmin Sırrı (Überschlag-Trick)</h3>
+          <p>
+            3 haneli bir sayının (örneğin <strong>287</strong>) 4 haneli bir parçanın (örneğin <strong>1845</strong>) içinde kaç kere olduğunu kafadan bulmak zor görünebilir. İşte Gymnasium öğretmeni taktiği:
+          </p>
+          <div class="example-callout">
+            <strong>Örnek:</strong> <code>1845 : 287</code> kaç kere var?<br/>
+            1️⃣ <strong>Yuvarla (Runden):</strong> <code>287</code> sayısı <code>300</code>'e çok yakındır. <code>1845</code> sayısı da <code>1800</code>'e yakındır.<br/>
+            2️⃣ <strong>Sıfırları Sil (Nullen wegdenken):</strong> <code>1800 : 300</code> yerine <code>18 : 3 = 6</code> diye düşün!<br/>
+            3️⃣ <strong>Kontrol Et (Prüfen):</strong> Kenarda <code>6 × 287 = 1722</code> çarp. 1845'ten küçük olduğu için <strong>6</strong> tam uydu!
+          </div>
+          <p class="trick-note">
+            💡 Eğer bölen <code>312</code> gibi bir sayıysa <strong>aşağı</strong> (300'e) yuvarla; <code>287</code> gibi bir sayıysa <strong>yukarı</strong> (300'e) yuvarla!
+          </p>
+        </div>
+
+        <!-- Card 3: The Zero Trap (Null im Ergebnis) -->
+        <div class="trick-card highlight-border">
+          <div class="trick-icon">⚠️</div>
+          <h3>3. Sınavların En Meşhur Tuzağı: Bölümde Sıfır (Null im Ergebnis)</h3>
+          <p>
+            Gymnasium 5. sınıf yazılılarında (<em>Klassenarbeit</em>) öğretmenlerin <strong>%100 sorduğu</strong> bir soru tipi vardır!
+          </p>
+          <div class="example-callout warning">
+            <strong>Kural:</strong> Yukarıdan yeni bir rakam indirdikten sonra (<em>Herunterholen</em>), oluşan sayı <strong>bölenden HÂLÂ küçükse</strong>:<br/>
+            ❌ Sakın hemen bir sonraki rakamı indirme!<br/>
+            ✅ Önce sonuca (bölüme) <strong>mutlaka bir <code>0</code> yaz</strong>, ondan sonra diğer rakamı indir!
+          </div>
+          <button class="btn btn-primary btn-full" id="btn-try-zero-trap">
+            🔍 Sıfır Tuzağı Örneğini (43218 : 214) Canlı İzle!
+          </button>
+        </div>
+
+        <!-- Card 4: Die Probe (Umkehraufgabe / Sağlama) -->
+        <div class="trick-card">
+          <div class="trick-icon">🛡️</div>
+          <h3>4. Yazılıda Tam Puan Garantisi: Sağlama (Die Probe)</h3>
+          <p>
+            İşlemi bitirdikten sonra cevabının doğru olduğundan emin olmak için <strong>ters işlem (Umkehraufgabe)</strong> yapılır:
+          </p>
+          <div class="example-callout">
+            <strong>Formül:</strong><br/>
+            <code>Quotient × Divisor + Rest = Dividend</code><br/>
+            <small>(Bölüm × Bölen + Kalan = Bölünen)</small><br/><br/>
+            <strong>Hızlı Son Basamak Kontrolü:</strong><br/>
+            Vaktin azsa sadece son rakamları çarp! Örneğin <code>28456 : 127 = 224</code> işleminde <code>4 × 7 = 28</code> (sonu 8 değil, o zaman kalan var mı diye bak!).
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <p>💖 Gymnasium 5. Sınıf Matematik Başarısı İçin Özel Hazırlandı • <em>Viel Erfolg in Mathe!</em> 🌟</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
